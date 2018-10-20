@@ -22,6 +22,7 @@ services:
     # corresponds to the "-v" option
     volumes:
     - ./app:/var/www
+    - ./php-cli/conf:/usr/local/etc/php/
     # connect to the network
     # corresponds to the "--network" option
     networks:
@@ -48,13 +49,14 @@ services:
       context: ./php-fpm
     tty: true
     volumes:
-    - ./app/HealthChain:/var/www
-    - ./php-fpm/conf:/usr/local/lib/php/extensions/no-debug-non-zts-20170718
+    - ./app/HealthChain:/var/www/HealthChain
+    - ./php-fpm/conf:/usr/local/etc/php/
     networks:
     - web-network
     container_name: php-fpm
 
   docker-mysql:
+    image: mysql:5.7
     build:
       context: ./mysql
     ports:
@@ -62,7 +64,11 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
+      MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: health_chain
+      MYSQL_USER: pashoque
+      MYSQL_PASSWORD: 123456
     container_name: mysql
     networks:
     - web-network
